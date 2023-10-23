@@ -78,7 +78,30 @@ done
 
 sudo update-alternatives --install /usr/bin/clang-cl /usr/bin/clang-cl-16 16
 
+
+#################################################################################################
+# Create the directories
+
+if [[ ! -d $BUILDING_DIR ]] ; then
+
+    mkdir $BUILDING_DIR
+
+fi
+
+if [ ! -d $DOWNLOAD_DIR ] ; then
+
+    mkdir $DOWNLOAD_DIR
+
+fi
+
+if [[ ! -d $INSTALL_DIR ]] ; then
+
+    mkdir $INSTALL_DIR
+
+fi
+
 cd ./msvc-wrapper/
+
 # Download and unpack MSVC
 
 ./vsdownload.py --dest $DOWNLOAD_DIR
