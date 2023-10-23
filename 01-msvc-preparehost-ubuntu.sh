@@ -2,7 +2,8 @@
 
 ################################################################################
 #
-# Script to prepare a Linux Host installation to compile Qt dependencies
+# Script to prepare a Linux Host installation to cross-compile Qt dependencies
+# for Windows target using Clang-cl and MSVC SDK.
 # This script must be run as sudo
 #
 # Copyright (c) 2013-2023, Gilles Caulier, <caulier dot gilles at gmail dot com>
@@ -65,7 +66,8 @@ optional_packages=("cmake"
                    "ca-certificates"
                    "winbind"
                    "clang"
-                   "clang-tools"
+                   "clang-16"
+                   "clang-tools-16"
                    "lld"
 )
 
@@ -76,8 +78,7 @@ done
 
 # Switch to new compiler
 
-sudo update-alternatives --install /usr/bin/clang-cl /usr/bin/clang-cl-16 16
-
+update-alternatives --install /usr/bin/clang-cl clang-cl /usr/bin/clang-cl-16 16
 
 #################################################################################################
 # Create the directories
@@ -100,7 +101,7 @@ if [[ ! -d $INSTALL_DIR ]] ; then
 
 fi
 
-cd ./msvc-wrapper/
+cd $ORIG_WD/msvc-wrapper/
 
 # Download and unpack MSVC
 
@@ -109,6 +110,19 @@ cd ./msvc-wrapper/
 # Clean up headers, add scripts for setting up the environments
 
 ./install.sh $DOWNLOAD_DIR
+
+# Check if compilation works as expected with Cmake.
+
+cd $ORIG_WD/msvc-wrapper/
+
+export BIN=$DOWNLOAD_DIR/bin/x64
+. ./msvcenv-native.sh
+
+cd $ORIG_WD/msvc-wrapper/test
+
+./test-cmake-clang-cl.sh
+
+cd $ORIG_WD
 
 #################################################################################################
 
