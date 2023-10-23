@@ -6,6 +6,10 @@
 # For details see the accompanying COPYING-CMAKE-SCRIPTS file.
 #
 
+CMAKE_MINIMUM_REQUIRED(VERSION 3.25.0)
+
+cmake_policy(SET CMP0141 NEW)
+
 SET(EXTPREFIX_openssl ${EXTPREFIX})
 
 ExternalProject_Add(ext_openssl
