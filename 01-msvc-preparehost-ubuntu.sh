@@ -105,7 +105,11 @@ cd $ORIG_WD/msvc-wrapper/
 
 # Download and unpack MSVC
 
-./vsdownload.py --dest $DOWNLOAD_DIR
+if [[ ! -d $DOWNLOAD_DIR/VC ]] ; then
+
+    ./vsdownload.py --dest $DOWNLOAD_DIR
+
+fi
 
 # Clean up headers, add scripts for setting up the environments
 
