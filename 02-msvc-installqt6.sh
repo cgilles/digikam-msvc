@@ -63,6 +63,9 @@ cd $ORIG_WD/msvc-wrapper/
 
 export BIN=$DOWNLOAD_DIR/bin/x64
 . ./msvcenv-native.sh
+export VERBOSE=true
+
+MSVC_TOOLCHAIN=$ORIG_WD/cmake/conf/msvc-conf.cmake
 
 #################################################################################################
 
@@ -72,11 +75,14 @@ rm -rf $BUILDING_DIR/* || true
 
 CMAKE_ARGS=(
     -DCMAKE_BUILD_TYPE=RelWithDebInfo
+    -DCMAKE_MSVC_DEBUG_INFORMATION_FORMAT=Embedded
     -DCMAKE_SYSTEM_NAME=Windows
+    -DCMAKE_TOOLCHAIN_FILE=${MSVC_TOOLCHAIN} \
+    -DCMAKE_C_LINK_EXECUTABLE=$(which lld-link)
     -DCMAKE_MT=$(which llvm-mt)
 )
 
-CC="clang-cl --target=$TARGET_TRIPLE" CXX="clang-cl --target=$TARGET_TRIPLE" RC="llvm-rc" \
+CC="clang-cl --target=$TARGET_TRIPLE" CXX="clang-cl --target=$TARGET_TRIPLE" LD="lld-link" RC="llvm-rc" \
     cmake \
         $ORIG_WD/3rdparty \
         -DCMAKE_INSTALL_PREFIX:PATH=/$INSTALL_DIR \
@@ -86,17 +92,17 @@ CC="clang-cl --target=$TARGET_TRIPLE" CXX="clang-cl --target=$TARGET_TRIPLE" RC=
         -DKP_VERSION=$DK_KP_VERSION \
         -DKDE_VERSION=$DK_KDE_VERSION \
         -GNinja \
-        "${CMAKE_ARGS[@]}" \
         -Wno-dev
 
-CC="clang-cl --target=$TARGET_TRIPLE" CXX="clang-cl --target=$TARGET_TRIPLE" RC="llvm-rc" \
+#        "${CMAKE_ARGS[@]}" \
+
+CC="clang-cl --target=$TARGET_TRIPLE" CXX="clang-cl --target=$TARGET_TRIPLE" LD="lld-link" RC="llvm-rc" \
     cmake \
         --build . \
         --config RelWithDebInfo \
-        --target ext_openssl
+        --target ext_openssl \
 
 #        -GNinja \
-#        "${CMAKE_ARGS[@]}" \
 
 #cmake --build . --config RelWithDebInfo --target ext_qt6                   -- -j$CPU_CORES
 
